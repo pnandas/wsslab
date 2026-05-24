@@ -1,0 +1,32 @@
+# SSL/TLS private keys and certificates (regenerate in each environment)
+nginx/certs/*.key
+nginx/certs/*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Docker
+*.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node (if any frontend tooling is added)
+node_modules/

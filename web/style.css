@@ -1,0 +1,678 @@
+/* Design System & Variables */
+:root {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #111827;
+    --bg-card: rgba(17, 24, 39, 0.75);
+    --border-color: rgba(255, 255, 255, 0.08);
+    
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+
+    --color-accent: #3b82f6;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+
+    /* Driver Colors */
+    --color-driver-1: #06b6d4; /* Alice - Cyan */
+    --color-driver-2: #10b981; /* Bob - Emerald */
+    --color-driver-3: #8b5cf6; /* Charlie - Purple */
+
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.logo-section h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    background: linear-gradient(to right, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px var(--color-accent);
+    animation: pulse 2s infinite;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    transition: all 0.3s ease;
+}
+
+.status-badge.connected {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-badge .indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    box-shadow: 0 0 8px currentColor;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    height: calc(100vh - 61px);
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.panel-title {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    padding: 1.25rem 1.25rem 0.75rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.drivers-list {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Driver Card */
+.driver-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.driver-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: var(--border-color);
+    transition: background-color 0.25s ease;
+}
+
+.driver-card.driver_1::before { background-color: var(--color-driver-1); }
+.driver-card.driver_2::before { background-color: var(--color-driver-2); }
+.driver-card.driver_3::before { background-color: var(--color-driver-3); }
+
+.driver-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.driver-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.driver-name {
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.driver-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+}
+
+.driver-status.active {
+    background-color: var(--color-success);
+    box-shadow: 0 0 8px var(--color-success);
+}
+
+.driver-telemetry {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.telemetry-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.telemetry-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+.telemetry-value {
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+}
+
+.speed-indicator {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.speed-bar-bg {
+    flex: 1;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.speed-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.driver-card.driver_1 .speed-bar-fill { background-color: var(--color-driver-1); }
+.driver-card.driver_2 .speed-bar-fill { background-color: var(--color-driver-2); }
+.driver-card.driver_3 .speed-bar-fill { background-color: var(--color-driver-3); }
+
+/* Main Map Area */
+.main-area {
+    display: grid;
+    grid-template-rows: 1fr 200px;
+    overflow: hidden;
+}
+
+.map-container {
+    position: relative;
+    background-color: #0c101d;
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px, 40px 40px, 40px 40px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#map-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.map-overlay-panel {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+}
+
+.map-overlay-title {
+    font-weight: 600;
+    margin-bottom: 0.375rem;
+    color: var(--text-primary);
+}
+
+.map-overlay-desc {
+    color: var(--text-secondary);
+}
+
+/* Console/Logs Panel */
+.console-panel {
+    background-color: #060810;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.console-header {
+    padding: 0.5rem 1rem;
+    background-color: #090d16;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.console-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.console-title::before {
+    content: '>';
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+}
+
+.console-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-clear {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.btn-clear:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.console-stream {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.log-entry {
+    animation: fadeIn 0.2s ease-out;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.log-time {
+    color: var(--text-muted);
+    margin-right: 0.5rem;
+}
+
+.log-tag {
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.log-tag.ws { color: var(--color-accent); }
+.log-tag.api { color: var(--color-warning); }
+
+.log-body {
+    color: var(--text-secondary);
+}
+
+/* Animations */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(2px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Version 2.0 Enhancements & UI Styles */
+
+.hidden {
+    display: none !important;
+}
+
+/* Login Page Overlay */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(6, 8, 16, 0.96);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(16px);
+    transition: opacity 0.3s ease;
+}
+
+.login-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 400px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.login-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+    background: linear-gradient(to right, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-card p {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    margin-bottom: 1rem;
+}
+
+.login-card form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-card input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+}
+
+.login-card input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.btn-login {
+    background: linear-gradient(to right, #2563eb, #7c3aed);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.btn-login:hover {
+    filter: brightness(1.1);
+}
+
+.login-tip {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    text-align: left;
+    background-color: rgba(255, 255, 255, 0.01);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.login-tip code {
+    color: #60a5fa;
+    font-family: var(--font-mono);
+}
+
+/* Header Session Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-logout {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.role-tag {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    text-transform: uppercase;
+    display: inline-block;
+    align-self: center;
+}
+
+/* Sidebar Control Panels */
+.control-panel {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.btn-action {
+    width: 100%;
+    padding: 0.625rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: center;
+}
+
+.btn-action.primary {
+    background-color: var(--color-accent);
+    color: white;
+}
+
+.btn-action.primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-action.danger {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.btn-action.danger:hover {
+    background-color: #dc2626;
+}
+
+.status-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.admin-controls {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.select-input {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    outline: none;
+    width: 100%;
+}
+
+.select-input:focus {
+    border-color: var(--color-accent);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.checkbox-group input {
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    cursor: pointer;
+}
+
+/* Utility Animations */
+.pulse-slow {
+    animation: pulse 3s infinite ease-in-out;
+}
+

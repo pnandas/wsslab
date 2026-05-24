@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # RabbitMQ Message Broker (Internal to onprem-net)
+  rabbitmq:
+    image: docker.io/library/rabbitmq:3-management
+    container_name: wsslab-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - onprem-net
+    restart: always
+
+  # Centrifugo WebSocket real-time server (Internal to onprem-net)
+  centrifugo:
+    image: docker.io/centrifugo/centrifugo:v5
+    container_name: wsslab-centrifugo
+    volumes:
+      - ./centrifugo/config.json:/centrifugo/config.json:ro
+    command: centrifugo --config /centrifugo/config.json
+    networks:
+      - onprem-net
+    restart: always
+
+  # Redis mapping cache (Internal to onprem-net)
+  redis:
+    image: docker.io/library/redis:alpine
+    container_name: wsslab-redis
+    networks:
+      - onprem-net
+    restart: always
+
+  # Identity Provider (Mock WSO2 Key Manager + Custom Mediation)
+  idp:
+    build:
+      context: ./idp
+    container_name: wsslab-idp
+    environment:
+      - JWT_SECRET=secret-jwt-token-secret
+    networks:
+      - cloud-net
+      - onprem-net
+    restart: always
+
+  # Web Backend Dispatcher API (Bridge between cloud-net and onprem-net)
+  web-backend:
+    build:
+      context: ./web-backend
+    container_name: wsslab-backend
+    networks:
+      - cloud-net
+      - onprem-net
+    depends_on:
+      - redis
+      - idp
+    restart: always
+
+  # Nginx API Gateway & Static File Server (Bridge between cloud-net and onprem-net)
+  nginx:
+    image: docker.io/library/nginx:alpine
+    container_name: wsslab-nginx
+    ports:
+      - "8081:80"
+      - "9443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./web:/usr/share/nginx/html:ro
+    networks:
+      - cloud-net
+      - onprem-net
+    depends_on:
+      - centrifugo
+      - web-backend
+      - idp
+    restart: always
+
+  # Mockup Generator (coordinates publisher - Internal to onprem-net)
+  mockup-generator:
+    build:
+      context: ./mockup-generator
+    container_name: wsslab-generator
+    networks:
+      - onprem-net
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  # Custom Queue Client (RabbitMQ -> Centrifugo Bridge - Internal to onprem-net)
+  queue-client:
+    build:
+      context: ./queue-client
+    container_name: wsslab-queue-client
+    networks:
+      - onprem-net
+    depends_on:
+      - rabbitmq
+      - centrifugo
+      - redis
+    restart: always
+
+networks:
+  cloud-net:
+    driver: bridge
+  onprem-net:
+    driver: bridge
+    internal: true

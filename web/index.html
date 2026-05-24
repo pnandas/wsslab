@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Driver Tracking Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-card">
+            <span class="logo-dot pulse-slow"></span>
+            <h2>Fleet Tracker Live</h2>
+            <p>Access your real-time telemetry dashboard</p>
+            <form id="login-form">
+                <input type="text" id="login-username" placeholder="Username" required autocomplete="username">
+                <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+                <button type="submit" class="btn-login">Connect Session</button>
+            </form>
+            <div class="login-tip">
+                <strong>Authentication Roles:</strong><br>
+                • Type <code>admin</code> for full fleet control.<br>
+                • Type any client name (e.g., <code>alice</code>) for passenger view.
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-section">
+            <span class="logo-dot"></span>
+            <h1>Fleet Tracker Live</h1>
+            <span id="role-tag" class="role-tag">Guest</span>
+        </div>
+        <div class="header-actions">
+            <button id="btn-logout" class="btn-logout">Sign Out</button>
+            <div id="connection-status" class="status-badge">
+                <span class="indicator"></span>
+                <span id="status-text">Disconnected</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- Sidebar Panel -->
+        <aside class="sidebar">
+            <!-- User Panel (Hidden by default) -->
+            <div id="user-panel" class="control-panel hidden">
+                <div class="panel-title">Ride Control</div>
+                <div class="user-actions">
+                    <button id="btn-request-ride" class="btn-action primary">Request Driver</button>
+                    <button id="btn-cancel-ride" class="btn-action danger hidden">Cancel Ride</button>
+                </div>
+                <div id="ride-status" class="status-text">Ready to request.</div>
+            </div>
+
+            <!-- Admin Panel (Hidden by default) -->
+            <div id="admin-panel" class="control-panel hidden">
+                <div class="panel-title">Fleet Controls</div>
+                <div class="admin-controls">
+                    <div class="filter-group">
+                        <label for="driver-filter">Focus Filter:</label>
+                        <select id="driver-filter" class="select-input">
+                            <option value="all">Show All Drivers</option>
+                            <option value="driver_1">Alice (Tesla Model S)</option>
+                            <option value="driver_2">Bob (BMW i4)</option>
+                            <option value="driver_3">Charlie (Audi e-tron)</option>
+                        </select>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="follow-driver-chk" checked>
+                        <label for="follow-driver-chk">Lock View to Focused Driver</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Drivers List (Varies based on role) -->
+            <div class="panel-title" id="list-title">Telemetry Feeds</div>
+            <div id="drivers-list" class="drivers-list">
+                <!-- Driver Cards will be injected dynamically here -->
+            </div>
+        </aside>
+
+        <!-- Main Tracking Viewport and Console Logs -->
+        <section class="main-area">
+            <div class="map-container">
+                <canvas id="map-canvas"></canvas>
+                <div class="map-overlay-panel">
+                    <div class="map-overlay-title">Simulated Paris Grid Map</div>
+                    <div class="map-overlay-desc">Live GPS telemetry over WSS</div>
+                </div>
+            </div>
+
+            <!-- Console Panel for Raw WS Messages -->
+            <div class="console-panel">
+                <div class="console-header">
+                    <div class="console-title">WebSocket Stream</div>
+                    <div class="console-actions">
+                        <button id="btn-clear-console" class="btn-clear">Clear</button>
+                    </div>
+                </div>
+                <div id="console-stream" class="console-stream">
+                    <!-- Logs will be appended dynamically here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="centrifuge.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

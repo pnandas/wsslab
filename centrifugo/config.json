@@ -1,0 +1,24 @@
+{
+  "api_key": "secret-api-key",
+  "token_hmac_secret_key": "secret-jwt-token-secret",
+  "allow_anonymous_connect_without_token": true,
+  "allow_subscribe_for_anonymous": true,
+  "namespaces": [
+    {
+      "name": "locations",
+      "allow_subscribe_for_anonymous": true,
+      "allow_subscribe_for_client": true
+    },
+    {
+      "name": "orders",
+      "allow_subscribe_for_anonymous": true,
+      "allow_subscribe_for_client": true
+    },
+    {
+      "name": "admin",
+      "allow_subscribe_for_anonymous": true,
+      "allow_subscribe_for_client": true
+    }
+  ],
+  "allowed_origins": ["*"]
+}
