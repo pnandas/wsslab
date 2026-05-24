@@ -2,6 +2,7 @@
 nginx/certs/*.key
 nginx/certs/*.pem
 
+git_token.txt
 # Python
 __pycache__/
 *.py[cod]
