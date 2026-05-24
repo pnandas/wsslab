@@ -288,6 +288,18 @@ function connectAndSubscribe(channelName) {
         connectionBadge.className = 'status-badge';
         statusText.textContent = 'Disconnected';
         logMessage('WS', `Disconnected: ${ctx.reason}`);
+
+        // If disconnected due to token expiry, auto-logout and show login screen
+        if (ctx.code === 401 || ctx.reason === 'unauthorized') {
+            logMessage('API_ERR', 'WebSocket session expired. Please log in again.');
+            localStorage.clear();
+            currentUser = null;
+            currentRole = null;
+            currentOrderId = null;
+            assignedDriverId = null;
+            driversState = {};
+            loginOverlay.classList.remove('hidden');
+        }
     });
 
     logMessage('SYSTEM', `Subscribing to channel: ${channelName}`);
@@ -331,6 +343,21 @@ async function apiRequest(endpoint, payload = {}) {
             headers: headers,
             body: JSON.stringify(payload)
         });
+
+        // Detect expired/invalid token before trying to parse the HTML error page as JSON
+        if (response.status === 401) {
+            logMessage('API_ERR', 'Session expired. Please log in again.');
+            disconnectCentrifugo();
+            localStorage.clear();
+            currentUser = null;
+            currentRole = null;
+            currentOrderId = null;
+            assignedDriverId = null;
+            driversState = {};
+            loginOverlay.classList.remove('hidden');
+            throw new Error('Session expired. Please log in again.');
+        }
+
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data.detail || 'API request failed');
@@ -341,6 +368,7 @@ async function apiRequest(endpoint, payload = {}) {
         throw e;
     }
 }
+
 
 // User Action: Request Driver
 btnRequestRide.addEventListener('click', async () => {

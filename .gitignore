@@ -2,7 +2,7 @@
 nginx/certs/*.key
 nginx/certs/*.pem
 
-git_token.txt
+push_to_git.txt
 # Python
 __pycache__/
 *.py[cod]

@@ -48,41 +48,60 @@ def generate_token(req: TokenRequest):
 
 @app.get("/oauth2/validate")
 def validate_token(
+    request: Request,
     response: Response,
     authorization: str = Header(None),
-    x_token: str = Header(None)
+    x_token: str = Header(None),
+    token: str = None  # Query parameter fallback for WebSocket ?token= flow
 ):
-    token = None
-    
-    # 1. Try to extract token from Authorization header
+    extracted_token = None
+
+    # 1. Try Authorization: Bearer <token> header (REST API calls)
     if authorization and authorization.lower().startswith("bearer "):
-        token = authorization.split(" ")[1]
-    
-    # 2. Fallback: try to extract from X-Token header (passed from WebSocket query params)
+        extracted_token = authorization.split(" ")[1]
+
+    # 2. Fallback: X-Token header (forwarded from Nginx proxy_set_header)
     elif x_token:
-        token = x_token
-        
-    if not token:
+        extracted_token = x_token
+
+    # 3. Fallback: ?token= query parameter (direct calls)
+    elif token:
+        extracted_token = token
+
+    # 4. Fallback: parse token from X-Original-URI header (WebSocket auth_request flow).
+    # Nginx sets X-Original-URI = $request_uri which includes the ?token= query string
+    # from the WebSocket upgrade URL. This is the reliable path for WS authentication.
+    if not extracted_token:
+        original_uri = request.headers.get("x-original-uri", "")
+        if "token=" in original_uri:
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(original_uri)
+            qs = parse_qs(parsed.query)
+            uri_tokens = qs.get("token", [])
+            if uri_tokens:
+                extracted_token = uri_tokens[0]
+
+    if not extracted_token:
         logger.warning("Validation failed: No token provided in request")
         raise HTTPException(status_code=401, detail="Authentication token is missing")
-        
+
     try:
         # Decode and verify JWT token
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        
+        payload = jwt.decode(extracted_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+
         user_id = payload.get("sub")
         role = payload.get("role", "user")
-        
+
         if not user_id:
             raise jwt.InvalidTokenError("Token is missing subject claim")
-            
+
         # Set headers that Nginx will forward to backend microservices
         response.headers["X-User-Id"] = user_id
         response.headers["X-User-Role"] = role
-        
+
         logger.info(f"Successfully validated token for user '{user_id}' ({role})")
         return {"status": "valid", "user_id": user_id, "role": role}
-        
+
     except jwt.ExpiredSignatureError:
         logger.warning("Validation failed: Token has expired")
         raise HTTPException(status_code=401, detail="Token has expired")
